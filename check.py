@@ -1,19 +1,26 @@
 import urllib
-
+import urllib2
+import json
+from xgoogle.search import GoogleSearch, SearchError
 import seolib
 import whois
+from IPython.display import HTML
 import re
 import dateutil.parser
 import datefinder
 import datetime
 import requests
+from py_bing_search import PyBingWebSearch
 import ssl, socket
-
+from urllib.parse import urlencode
 from slimit.parser import Parser
 from bs4 import BeautifulSoup
 import urlparse
 from pyfav import get_favicon_url
-
+import subprocess
+from subprocess import call
+import threading
+import time
 link = 'https://www.w3schools.com/js/tryit.asp?filename=tryjs_prompt'
 arr = []
 domain = link.split('/')
@@ -349,7 +356,7 @@ else:
 # 26 Website Traffic
 alexa_rank = 0
 seo = seolib
-alexa_rank = seo.get_alexa(domain[2])
+alexa_rank = seo.get_alexa('http://' + domain[2])
 
 if alexa_rank < 100000 and alexa_rank > 0:
     arr.append(-1)
@@ -357,3 +364,33 @@ elif alexa_rank > 100000:
     arr.append(0)
 else:
     arr.append(-1)
+
+# 27.
+
+
+arr.append(0)
+
+# 28: Google Index
+proxies = {
+    'https': 'https://localhost:8123',
+    'http': 'http://localhost:8123'
+}
+
+user_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'
+headers = {'User-Agent': user_agent}
+
+query = {'q': 'info:' + link}
+google = "https://www.google.co.in/search?" + urlencode(query)
+data = requests.get(google, headers=headers)
+data.encoding = 'ISO-8859-1'
+soup = BeautifulSoup(str(data.content), "html.parser")
+try:
+    check = soup.find(id="rso").find("div").find("div").find("h3").find("a")
+    href = check['href']
+    print ("yes")
+    arr.append(-1)
+except AttributeError:
+    arr.append(1)
+print(arr)
+
+# 29 Link Pointing to
