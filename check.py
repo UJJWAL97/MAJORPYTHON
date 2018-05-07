@@ -1,26 +1,17 @@
 import urllib
-import urllib2
-import json
-from xgoogle.search import GoogleSearch, SearchError
 import seolib
 import whois
-from IPython.display import HTML
 import re
 import dateutil.parser
-import datefinder
 import datetime
 import requests
-from py_bing_search import PyBingWebSearch
 import ssl, socket
-from urllib.parse import urlencode
+from urllib import urlencode
 from slimit.parser import Parser
 from bs4 import BeautifulSoup
 import urlparse
 from pyfav import get_favicon_url
-import subprocess
-from subprocess import call
-import threading
-import time
+
 link = 'https://www.w3schools.com/js/tryit.asp?filename=tryjs_prompt'
 arr = []
 domain = link.split('/')
@@ -103,7 +94,7 @@ except socket.gaierror:
 
 # 9.Domain_registeration_length
 
-w = whois.whois(domain[2])
+w = whois.whois('google.co.in')
 date = re.findall('Expiration Date:*(.+)', w.text)
 final_date = dateutil.parser.parse(date[0])
 current_time = datetime.datetime.now()
@@ -338,10 +329,14 @@ else:
 # 24.Age of Domain
 date = re.findall('Creation Date:*(.+)', w.text)
 date.append(re.findall('Created On:*(.+)', w.text))
-final_date = dateutil.parser.parse(date[0])
-current_time = datetime.datetime.now()
-result_time = current_time.date() - final_date.date()
-
+try:
+    final_date = dateutil.parser.parse(date[0])
+    current_time = datetime.datetime.now()
+    result_time = current_time.date() - final_date.date()
+except TypeError:
+    final_date = dateutil.parser.parse(date[0][0])
+    current_time = datetime.datetime.now()
+    result_time = current_time.date() - final_date.date()
 if result_time.days < 183:
     arr.append(1)
 else:
@@ -371,11 +366,6 @@ else:
 arr.append(0)
 
 # 28: Google Index
-proxies = {
-    'https': 'https://localhost:8123',
-    'http': 'http://localhost:8123'
-}
-
 user_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'
 headers = {'User-Agent': user_agent}
 
@@ -387,10 +377,8 @@ soup = BeautifulSoup(str(data.content), "html.parser")
 try:
     check = soup.find(id="rso").find("div").find("div").find("h3").find("a")
     href = check['href']
-    print ("yes")
     arr.append(-1)
 except AttributeError:
     arr.append(1)
 print(arr)
 
-# 29 Link Pointing to
